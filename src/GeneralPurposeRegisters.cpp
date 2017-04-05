@@ -1,7 +1,7 @@
-/*Í¨ÓÃ¼Ä´æÆ÷¶Ñ_General Purpose Registers*/
+/*Í¨ï¿½Ã¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½_General Purpose Registers*/
 
-#include "pass_second.h"
-#include "yui_tools.h"
+#include "../lib/pass_second.h"
+#include "../lib/yui_tools.h"
 
 GPR::GPR(int base, int number)
 {

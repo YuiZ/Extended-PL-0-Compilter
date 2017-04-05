@@ -1,8 +1,8 @@
-/*Ö÷³ÌÐò_Main*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_Main*/
 
-#include "pass_first.h"
-#include "pass_second.h"
-#include "yui_tools.h"
+#include "../lib/pass_first.h"
+#include "../lib/pass_second.h"
+#include "../lib/yui_tools.h"
 
 void Init_all()
 {

@@ -1,26 +1,26 @@
-/*Ä¿±ê´úÂëÉú³É_Object Code Producer*/
+/*Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_Object Code Producer*/
 
-#include "pass_second.h"
-#include "yui_tools.h"
+#include "../lib/pass_second.h"
+#include "../lib/yui_tools.h"
 
 int P_read;
 
-string ObjectCode[ObjCode_Max_Size];//Ä¿±ê´úÂë
+string ObjectCode[ObjCode_Max_Size];//Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
 int P_obj;
 
-string Data_str[32];//×Ö·û´®
+string Data_str[32];//ï¿½Ö·ï¿½ï¿½ï¿½
 int P_str;
 
 GPR *mips_reg;
 
 void obj_run(Quatriple *q, Sym_table *t);
 
-Sym_line* RT_query_activelog(Sym_table *t, string tar_id, string* base_reg)//²éÕÒ±äÁ¿£¬²¢½«ÆäÖµÈ¡µ½base_regÖÐ
+Sym_line* RT_query_activelog(Sym_table *t, string tar_id, string* base_reg)//ï¿½ï¿½ï¿½Ò±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÈ¡ï¿½ï¿½base_regï¿½ï¿½
 {
 	int back_level = 0;
 	Sym_line* l = t->Sym_query_obj(tar_id, &back_level);
 
-	if (back_level == 0)//Èô¾ÍÔÚ±¾²ã
+	if (back_level == 0)//ï¿½ï¿½ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½
 		*base_reg = "$fp";
 	else if (!(l->type == "func_int" || l->type == "func_char"))
 	{
@@ -30,20 +30,20 @@ Sym_line* RT_query_activelog(Sym_table *t, string tar_id, string* base_reg)//²éÕ
 	}
 	return l;
 }
-string RT_query_register(Sym_table *t, string default_reg, string tar)//²éÕÒ²Ù×÷Êý
+string RT_query_register(Sym_table *t, string default_reg, string tar)//ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	string reg_r;
 
-	if (tar[0] == '_')//ÈôÊÇÁÙÊ±±äÁ¿£¬Ôò²éÕÒ¼Ä´æÆ÷¶Ñ
+	if (tar[0] == '_')//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 		reg_r = mips_reg->GPR_get_reg(tar);
-	else if (tar[0] >= '0' && tar[0] <= '9')//ÈôÊÇÊý×Ö£¬Ö±½Ó¼ÓÔØµ½default_regÖÐ
+	else if (tar[0] >= '0' && tar[0] <= '9')//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½Ö±ï¿½Ó¼ï¿½ï¿½Øµï¿½default_regï¿½ï¿½
 	{
 		reg_r = default_reg;
 		ObjectCode[P_obj++] = "li " + default_reg + "," + tar;
 	}
-	else//ÈôÊÇ±äÁ¿
+	else//ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½
 	{
-		reg_r = mips_reg->GPR_search_glb(tar);//ÏÈÕÒÊÇ·ñÔÚÈ«¾Ö¼Ä´æÆ÷ÖÐ
+		reg_r = mips_reg->GPR_search_glb(tar);//ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 		
 		if (reg_r == "")
 		{
@@ -64,8 +64,8 @@ string RT_query_register(Sym_table *t, string default_reg, string tar)//²éÕÒ²Ù×÷
 	return reg_r;
 }
 
-//¼Ä´æÆ÷×´Ì¬±£´æ¼°»Ö¸´£»ÔÚ¹ý³ÌºÍº¯Êýµ÷ÓÃÖ®Ç°/ºó
-void RT_regs_save()//±£´æµ±Ç°¼Ä´æÆ÷×´Ì¬
+//ï¿½Ä´ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½æ¼°ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Ú¹ï¿½ï¿½ÌºÍºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°/ï¿½ï¿½
+void RT_regs_save()//ï¿½ï¿½ï¿½æµ±Ç°ï¿½Ä´ï¿½ï¿½ï¿½×´Ì¬
 {
 	int i;
 	for (i = 0; i < mips_reg->gpr_number; ++i)
@@ -74,7 +74,7 @@ void RT_regs_save()//±£´æµ±Ç°¼Ä´æÆ÷×´Ì¬
 	ObjectCode[P_obj++] = "addi $gp,$gp," + yui_itos(4*mips_reg->gpr_number);
 	ObjectCode[P_obj++] = "";
 }
-void RT_regs_recover()//¶ÁÈ¡ÉÏÒ»´Î±£´æµÄ¼Ä´æÆ÷×´Ì¬
+void RT_regs_recover()//ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½Î±ï¿½ï¿½ï¿½Ä¼Ä´ï¿½ï¿½ï¿½×´Ì¬
 {
 	ObjectCode[P_obj++] = "subi $gp,$gp," + yui_itos(4 * mips_reg->gpr_number);;
 	for (int i = 0; i < mips_reg->gpr_number; ++i)
@@ -145,14 +145,14 @@ void RT_refresh_glb(Sym_table *t_callee)
 		Error_report(0, "Error in glb_reg => Find me in RT_refresh_glb();");
 }
 
-Quatriple* obj_nextQ()//¶ÁÏÂÒ»ÌõÖÐ¼ä´úÂë
+Quatriple* obj_nextQ()//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½
 {
 	if (P_read < P_qc)
 	{
-		if (Block_sign[P_read])//Èô´Ë¾äÊÇ»ù±¾¿éÈë¿Ú
+		if (Block_sign[P_read])//ï¿½ï¿½ï¿½Ë¾ï¿½ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
-			mips_reg->GPR_refresh();//ÁÙÊ±¼Ä´æÆ÷·ÖÅäÖ¸ÕëÖÃ0£¨¹ý»ù±¾¿éºóÁÙÊ±¼Ä´æÆ÷¿ÉÖØÐÂ·ÖÅä£©
-			ObjectCode[P_obj++] = "_b" + yui_itos(P_read) + ":";//Ìí¼Ó»ù±¾¿é±ê¼Ç£¬ÓÃÓÚÌø×ªÓï¾ä
+			mips_reg->GPR_refresh();//ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ä£©
+			ObjectCode[P_obj++] = "_b" + yui_itos(P_read) + ":";//ï¿½ï¿½Ó»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½
 		}
 		return  QuatriCode[P_read++];
 	}
@@ -160,29 +160,29 @@ Quatriple* obj_nextQ()//¶ÁÏÂÒ»ÌõÖÐ¼ä´úÂë
 		return NULL;
 }
 
-void obj_caculate_AS(Quatriple *q, Sym_table *t, string op)//¼ÆËã£¬+Óë-ÔËËã·û´¦Àí
+void obj_caculate_AS(Quatriple *q, Sym_table *t, string op)//ï¿½ï¿½ï¿½ã£¬+ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	string reg_n1, reg_n2, reg_r;
 	
-	//·Ö±ðÈ¡Á½¸ö²Ù×÷Êý
-	reg_n1 = (q->n1 == "")?"$0": RT_query_register(t, "$t8", q->n1);//Èôq->n1Îª¿Õ£¬ÔòÊÇ'-'×÷ÎªÆðÊ¼µÄ±í´ïÊ½
+	//ï¿½Ö±ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	reg_n1 = (q->n1 == "")?"$0": RT_query_register(t, "$t8", q->n1);//ï¿½ï¿½q->n1Îªï¿½Õ£ï¿½ï¿½ï¿½ï¿½ï¿½'-'ï¿½ï¿½Îªï¿½ï¿½Ê¼ï¿½Ä±ï¿½ï¿½Ê½
 	reg_n2 = RT_query_register(t, "$t9", q->n2);
 
-	//È·¶¨¼ÆËã½á¹û´æÈëµÄÎ»ÖÃ
-	if (q->r[0] == '_')//ÁÙÊ±±äÁ¿_Tx
+	//È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+	if (q->r[0] == '_')//ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½_Tx
 	{
-		reg_r = mips_reg->GPR_get_reg(q->r);//´Ó¼Ä´æÆ÷¶Ñ²éÑ¯£¨ÈçÎ´¼ÇÈëÔò·ÖÅäÒÔÐÂµÄÁÙÊ±¼Ä´æÆ÷£©
+		reg_r = mips_reg->GPR_get_reg(q->r);//ï¿½Ó¼Ä´ï¿½ï¿½ï¿½ï¿½Ñ²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 		ObjectCode[P_obj++] = op + " " + reg_r + "," + reg_n1 + "," + reg_n2;
 	}
-	else//Ò»°ã±äÁ¿
+	else//Ò»ï¿½ï¿½ï¿½ï¿½ï¿½
 	{
-		reg_r = mips_reg->GPR_search_glb(q->r);//ÈôÔÚÈ«¾Ö¼Ä´æÆ÷ÖÐ
+		reg_r = mips_reg->GPR_search_glb(q->r);//ï¿½ï¿½ï¿½ï¿½È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (reg_r == "")
 		{
-			string base_reg = "$s7";//Ä¬ÈÏ½«´ýÑ°±äÁ¿ËùÔÚµÄ»ùµØÖ·´æÈë$s7
-			Sym_line *l = RT_query_activelog(t, q->r, &base_reg);//²éÑ¯±äÁ¿ËùÔÚÎ»ÖÃ
-			ObjectCode[P_obj++] = op + " $t8," + reg_n1 + "," + reg_n2;//¼ÆËã
-			if (l->type == "addr_int" || l->type == "addr_char")//Èô±äÁ¿ÊÇÒ»¸öµØÖ·£¬ÔòÔÙÑ°Ö·´æÈë
+			string base_reg = "$s7";//Ä¬ï¿½Ï½ï¿½ï¿½ï¿½Ñ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÚµÄ»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½$s7
+			Sym_line *l = RT_query_activelog(t, q->r, &base_reg);//ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+			ObjectCode[P_obj++] = op + " $t8," + reg_n1 + "," + reg_n2;//ï¿½ï¿½ï¿½ï¿½
+			if (l->type == "addr_int" || l->type == "addr_char")//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ°Ö·ï¿½ï¿½ï¿½ï¿½
 			{
 				ObjectCode[P_obj++] = "lw $t9," + yui_itos(l->addr) + "(" + base_reg + ")";
 				ObjectCode[P_obj++] = "sw $t8,0($t9)";
@@ -194,7 +194,7 @@ void obj_caculate_AS(Quatriple *q, Sym_table *t, string op)//¼ÆËã£¬+Óë-ÔËËã·û´¦À
 			ObjectCode[P_obj++] = op + " " + reg_r + "," + reg_n1 + "," + reg_n2;
 	}
 }
-void obj_caculate_MD(Quatriple *q, Sym_table *t, string op)//¼ÆËã£¬*Óë/ÔËËã·û´¦Àí
+void obj_caculate_MD(Quatriple *q, Sym_table *t, string op)//ï¿½ï¿½ï¿½ã£¬*ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	string reg_n1, reg_n2, reg_r;
 
@@ -210,7 +210,7 @@ void obj_caculate_MD(Quatriple *q, Sym_table *t, string op)//¼ÆËã£¬*Óë/ÔËËã·û´¦À
 	}
 	else
 	{
-		reg_r = mips_reg->GPR_search_glb(q->r);//ÈôÔÚÈ«¾Ö¼Ä´æÆ÷ÖÐ
+		reg_r = mips_reg->GPR_search_glb(q->r);//ï¿½ï¿½ï¿½ï¿½È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (reg_r == "")
 		{
 			string base_reg = "$s7";
@@ -232,35 +232,35 @@ void obj_caculate_MD(Quatriple *q, Sym_table *t, string op)//¼ÆËã£¬*Óë/ÔËËã·û´¦À
 		}
 	}
 }
-void obj_array_load(Quatriple *q, Sym_table *t)//È¡Êý×éÔªËØÖµ(½ö×÷Îª±í´ïÊ½Òò×ÓÊ±)
+void obj_array_load(Quatriple *q, Sym_table *t)//È¡ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½Öµ(ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½Ê±)
 {
 	string base_reg = "$s7";
-	Sym_line *l = RT_query_activelog(t, q->n1, &base_reg);//²éÑ¯Êý×éËùÔÚÎ»ÖÃ
+	Sym_line *l = RT_query_activelog(t, q->n1, &base_reg);//ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 	
-	if (base_reg == "$fp")//ÒòÎªÖ®ºóÐèÊ¹ÓÃÊý×éËùÔÚ²ã»ùµØÖ·½øÐÐ¼ÆËã£¬¹Êµ±Êý×éÔÚ±¾²ãÊ±£¬Ò²Ðè½«µØÖ·È¡µ½$s7
+	if (base_reg == "$fp")//ï¿½ï¿½ÎªÖ®ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ã£¬ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ò²ï¿½è½«ï¿½ï¿½Ö·È¡ï¿½ï¿½$s7
 	{
 		ObjectCode[P_obj++] = "ori $s7,$fp,0";
 		base_reg = "$s7";
 	}
-	string reg_offset = RT_query_register(t, "$t8", q->n2);//È¡Æ«ÒÆÁ¿
-	ObjectCode[P_obj++] = "sll " + reg_offset + "," + reg_offset + ",2";//Êµ¼ÊÄÚ´æµØÖ· = Æ«ÒÆ * 4£¨¼´×óÒÆ2Î»£©
-	ObjectCode[P_obj++] = "add " + base_reg + "," + base_reg + "," + reg_offset;//»ùÖ·+Æ«ÒÆ => ÔªËØÎ»ÖÃ
+	string reg_offset = RT_query_register(t, "$t8", q->n2);//È¡Æ«ï¿½ï¿½ï¿½ï¿½
+	ObjectCode[P_obj++] = "sll " + reg_offset + "," + reg_offset + ",2";//Êµï¿½ï¿½ï¿½Ú´ï¿½ï¿½Ö· = Æ«ï¿½ï¿½ * 4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2Î»ï¿½ï¿½
+	ObjectCode[P_obj++] = "add " + base_reg + "," + base_reg + "," + reg_offset;//ï¿½ï¿½Ö·+Æ«ï¿½ï¿½ => Ôªï¿½ï¿½Î»ï¿½ï¿½
 
 	string reg_r = mips_reg->GPR_get_reg(q->r);
 	ObjectCode[P_obj++] = "lw " + reg_r + "," + yui_itos(l->addr) + "(" + base_reg + ")";//È¡Öµ
 }
-void obj_assign(Quatriple *q, Sym_table *t)//¸³ÖµÓï¾ä
+void obj_assign(Quatriple *q, Sym_table *t)//ï¿½ï¿½Öµï¿½ï¿½ï¿½
 {
 	string reg_n1, reg_r;
 
-	//´¦Àí´ý¸³ÓèÖ®Öµ£¬p->n1
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Öµï¿½ï¿½p->n1
 	reg_n1 = RT_query_register(t, "$t8", q->n1);
-	if (reg_n1 != "$t8")//´ý¸³ÖµÖÃÓë$t8
+	if (reg_n1 != "$t8")//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½$t8
 		ObjectCode[P_obj++] = "ori $t8," + reg_n1 + ",0";
 
-	//´¦Àí±»¸³Öµ¶ÔÏó
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
 	reg_r = mips_reg->GPR_search_glb(q->r);
-	if (reg_r != "")//Èô¶ÔÏóÔÚÈ«¾Ö¼Ä´æÆ÷ÖÐ
+	if (reg_r != "")//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 	{
 		ObjectCode[P_obj++] = "ori " + reg_r + ",$t8,0";
 	}
@@ -268,16 +268,16 @@ void obj_assign(Quatriple *q, Sym_table *t)//¸³ÖµÓï¾ä
 	{
 		string base_reg = "$s7";
 		Sym_line *l = RT_query_activelog(t, q->r, &base_reg);
-		if (base_reg == "$fp" && l->length > 1)//Êý×éÆ«ÒÆ²»Ó¦¸Ä±ä$fp
+		if (base_reg == "$fp" && l->length > 1)//ï¿½ï¿½ï¿½ï¿½Æ«ï¿½Æ²ï¿½Ó¦ï¿½Ä±ï¿½$fp
 		{
 			ObjectCode[P_obj++] = "ori $s7,$fp,0";
 			base_reg = "$s7";
 		}
 
-		//¸³Öµ¹ý³Ì
-		if (l->type == "func_int" || l->type == "func_char")//Èô´Ë¸³ÖµÓï¾äÊÇº¯Êý·µ»ØÖµ
+		//ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
+		if (l->type == "func_int" || l->type == "func_char")//ï¿½ï¿½ï¿½Ë¸ï¿½Öµï¿½ï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 		{
-			ObjectCode[P_obj++] = "ori $v1,$t8,0";//½«·µ»ØÖµ¸ø¼Ä´æÆ÷$v1
+			ObjectCode[P_obj++] = "ori $v1,$t8,0";//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½$v1
 		}
 		else if (l->type == "addr_int" || l->type == "addr_char")
 		{
@@ -286,7 +286,7 @@ void obj_assign(Quatriple *q, Sym_table *t)//¸³ÖµÓï¾ä
 		}
 		else
 		{
-			if (q->n2 != "")//¸³Öµn2·Ç¿ÕÔòÎªoffset,¼´¸³Öµ¶ÔÏóÊÇÊý×éÔªËØ
+			if (q->n2 != "")//ï¿½ï¿½Öµn2ï¿½Ç¿ï¿½ï¿½ï¿½Îªoffset,ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½
 			{
 				string reg_n2 = RT_query_register(t, "$t9", q->n2);
 
@@ -302,17 +302,17 @@ void obj_jump(Quatriple *q)
 {
 	ObjectCode[P_obj++] = "j _b" + q->n1;
 }
-void obj_condit_jump(Quatriple *q, Sym_table *t)//Ìõ¼þ×ªÒÆ£¬¿ØÖÆÁ÷
+void obj_condit_jump(Quatriple *q, Sym_table *t)//ï¿½ï¿½ï¿½ï¿½×ªï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	string condit_parts[3];
-	condit_parts[0] = condit_parts[1] = condit_parts[2] = "";//0-<×ó±í´ïÊ½> 1-<±È½ÏÔËËã·û> 2-<ÓÒ±í´ïÊ½>
+	condit_parts[0] = condit_parts[1] = condit_parts[2] = "";//0-<ï¿½ï¿½ï¿½ï¿½Ê½> 1-<ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½> 2-<ï¿½Ò±ï¿½ï¿½Ê½>
 
-	yui_split_condit(q->n2, condit_parts);//½«ËÄÔªÊ½Ð¯´øµÄÌõ¼þ²ð·Ö
+	yui_split_condit(q->n2, condit_parts);//ï¿½ï¿½ï¿½ï¿½ÔªÊ½Ð¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	string n1_reg = RT_query_register(t, "$t8", condit_parts[0]);
 	string n2_reg = RT_query_register(t, "$t9", condit_parts[2]);
 
-	bool anti = (q->r == "if not") ? true : false;//ÊÇ·ñÎª¡°²»³ÉÁ¢Ê±Ìø×ª¡±
+	bool anti = (q->r == "if not") ? true : false;//ï¿½Ç·ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½×ªï¿½ï¿½
 
 	if (condit_parts[1] == "==")
 		ObjectCode[P_obj++] = ((anti)? "bne ":"beq ") + n1_reg + "," + n2_reg + ",_b" + q->n1;
@@ -340,7 +340,7 @@ void obj_condit_jump(Quatriple *q, Sym_table *t)//Ìõ¼þ×ªÒÆ£¬¿ØÖÆÁ÷
 		ObjectCode[P_obj++] = ((anti) ? "beq " : "bne ") + n1_reg + "," + n2_reg + ",_b" + q->n1;
 }
 
-void obj_read(Quatriple *q, Sym_table *t)//ÏµÍ³µ÷ÓÃ-¶ÁÈë
+void obj_read(Quatriple *q, Sym_table *t)//ÏµÍ³ï¿½ï¿½ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½
 {
 	string base_reg = "$t9";
 	Sym_line *l = RT_query_activelog(t, q->r, &base_reg);
@@ -350,7 +350,7 @@ void obj_read(Quatriple *q, Sym_table *t)//ÏµÍ³µ÷ÓÃ-¶ÁÈë
 		ObjectCode[P_obj++] = "li $v0,12";
 		ObjectCode[P_obj++] = "syscall";
 
-		string reg_r = mips_reg->GPR_search_glb(q->r);//Èô´æ·Å¶ÔÏóÔÚÈ«¾Ö¼Ä´æÆ÷ÖÐ
+		string reg_r = mips_reg->GPR_search_glb(q->r);//ï¿½ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (reg_r != "")
 			ObjectCode[P_obj++] = "ori " + reg_r + ",$v0,0";
 		else
@@ -384,15 +384,15 @@ void obj_read(Quatriple *q, Sym_table *t)//ÏµÍ³µ÷ÓÃ-¶ÁÈë
 	else
 		Error_report(0, "Unknown read type => Find me in obj_read();");
 }
-void obj_write(Quatriple *q, Sym_table *t)//ÏµÍ³µ÷ÓÃ-Ð´
+void obj_write(Quatriple *q, Sym_table *t)//ÏµÍ³ï¿½ï¿½ï¿½ï¿½-Ð´
 {
-	if (q->n1[0] == '"')//Èô²ÎÊýÊÇ×Ö·û´®
+	if (q->n1[0] == '"')//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
 	{
 		Data_str[P_str++] = "str" + yui_itos(P_str - 1) + ": .asciiz " + q->n1;
 		ObjectCode[P_obj++] = "la $a0,str" + yui_itos(P_str - 1);
 		ObjectCode[P_obj++] = "li $v0,4";
 	}
-	else//ÈôÊÇ±í´ïÊ½½á¹û
+	else//ï¿½ï¿½ï¿½Ç±ï¿½ï¿½Ê½ï¿½ï¿½ï¿½
 	{
 		string temp_reg = RT_query_register(t, "$a0", q->n1);
 		if (temp_reg != "$a0")
@@ -412,24 +412,24 @@ void obj_write(Quatriple *q, Sym_table *t)//ÏµÍ³µ÷ÓÃ-Ð´
 	ObjectCode[P_obj++] = "syscall";
 }
 
-void obj_pass(Sym_table *t_callee, Sym_table *t_caller)//²ÎÊý´«µÝ
+void obj_pass(Sym_table *t_callee, Sym_table *t_caller)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
-	int params_counter = 0;//¼ÇÂ¼ÒÑ´«²ÎÊý¸öÊý
+	int params_counter = 0;//ï¿½ï¿½Â¼ï¿½Ñ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	string base_reg = "$s7";
 	Sym_line *temp_line = NULL;
 	Quatriple *q_read;
 	
-	while (params_counter < t_callee->P_st_param)//²ÎÊýÈ«²¿´«µÝÍêÖ®Ç°£¬¿ÉÄÜ´æÔÚ¼ÆËã²ÎÊýµÄÓï¾äÐòÁÐ
+	while (params_counter < t_callee->P_st_param)//ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ü´ï¿½ï¿½Ú¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{
 		q_read = obj_nextQ();
 
-		if (q_read->op == "PASS_A")//´«µØÖ·
+		if (q_read->op == "PASS_A")//ï¿½ï¿½ï¿½ï¿½Ö·
 		{
-			temp_line = RT_query_activelog(t_caller, q_read->n1, &base_reg);//²ÎÊýÀ´Ô´ÓÚÉÏ²ã£¬¹Ê²éÑ¯ÓÃt_caller£»²»¿¼ÂÇÈ«¾Ö¼Ä´æÆ÷=>ÖÕ½«´æÈëÄÚ´æ
+			temp_line = RT_query_activelog(t_caller, q_read->n1, &base_reg);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½Ï²ã£¬ï¿½Ê²ï¿½Ñ¯ï¿½ï¿½t_callerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½=>ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
 
-			if (q_read->n2 != "")//Êý×éÔªËØ
+			if (q_read->n2 != "")//ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½
 			{
-				if (base_reg == "$fp")//Êý×éÆ«ÒÆ²»Ó¦¸Ä±ä$fp
+				if (base_reg == "$fp")//ï¿½ï¿½ï¿½ï¿½Æ«ï¿½Æ²ï¿½Ó¦ï¿½Ä±ï¿½$fp
 				{
 					ObjectCode[P_obj++] = "ori $s7,$fp,0";
 					base_reg = "$s7";
@@ -442,7 +442,7 @@ void obj_pass(Sym_table *t_callee, Sym_table *t_caller)//²ÎÊý´«µÝ
 				ObjectCode[P_obj++] = "ori $a2," + base_reg + ",0";
 			}
 			
-			if (temp_line->type == "addr_int" || temp_line->type == "addr_char")//Èô±¾ÉíÊÇµØÖ·£¬¼´¡°´«Öµ¡±
+			if (temp_line->type == "addr_int" || temp_line->type == "addr_char")//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½
 				ObjectCode[P_obj++] = "lw $a2," + yui_itos(temp_line->addr) + "(" + base_reg + ")";
 			else
 				ObjectCode[P_obj++] = "addi $a2," + base_reg + "," + yui_itos(temp_line->addr);
@@ -450,7 +450,7 @@ void obj_pass(Sym_table *t_callee, Sym_table *t_caller)//²ÎÊý´«µÝ
 			ObjectCode[P_obj++] = "sw $a2," + yui_itos(t_callee->params[params_counter]->addr) + "($sp)";
 			params_counter++;
 		}
-		else if (q_read->op == "PASS_V")//´«µÝÖµ
+		else if (q_read->op == "PASS_V")//ï¿½ï¿½ï¿½ï¿½Öµ
 		{
 			string temp_reg;
 			temp_reg = RT_query_register(t_caller, "$a2", q_read->n1);
@@ -470,19 +470,19 @@ void obj_call(Quatriple *q)
 	Sym_line *l_callee = t_caller->Sym_query(q->n2);
 	Sym_table *t_callee = l_callee->sub_table;
 	
-	obj_pass(t_callee, t_caller);//´«µÝ²ÎÊý
+	obj_pass(t_callee, t_caller);//ï¿½ï¿½ï¿½Ý²ï¿½ï¿½ï¿½
 
-	ObjectCode[P_obj++] = "ori $a0,$fp,0";//¼ÇÏÂÉÏ²ã»ùÖ· ¶¯Ì¬Á´
+	ObjectCode[P_obj++] = "ori $a0,$fp,0";//ï¿½ï¿½ï¿½ï¿½ï¿½Ï²ï¿½ï¿½Ö· ï¿½ï¿½Ì¬ï¿½ï¿½
 
-	//Éú³É¾²Ì¬Á´
-	if (t_caller == Table0 || t_callee->Sym_query(t_caller->belong_line->id) != NULL)//±»µ÷ÕßÄÜ²éµ½µ÷ÓÃÕß£¬¼´ÎªµÝ¹é»ò×Ó¹ý³Ìµ÷ÓÃ
+	//ï¿½ï¿½ï¿½É¾ï¿½Ì¬ï¿½ï¿½
+	if (t_caller == Table0 || t_callee->Sym_query(t_caller->belong_line->id) != NULL)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü²éµ½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½Îªï¿½Ý¹ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½Ìµï¿½ï¿½ï¿½
 	{
-		if (t_callee->father == t_caller->father)//ÈôÊÇÒ»´ÎµÝ¹é»òCallerÓëCallee´¦ÓÚ·ûºÅ±íÍ¬²ã
-			ObjectCode[P_obj++] = "lw $a1,8($fp)";//¾²Ì¬Á´Í¬Caller
-		else//ÈôÊÇµ÷ÓÃ×Ó¹ý³Ì
-			ObjectCode[P_obj++] = "ori $a1,$fp,0";//¾²Ì¬Á´Ö¸Caller
+		if (t_callee->father == t_caller->father)//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ÎµÝ¹ï¿½ï¿½Callerï¿½ï¿½Calleeï¿½ï¿½ï¿½Ú·ï¿½ï¿½Å±ï¿½Í¬ï¿½ï¿½
+			ObjectCode[P_obj++] = "lw $a1,8($fp)";//ï¿½ï¿½Ì¬ï¿½ï¿½Í¬Caller
+		else//ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½
+			ObjectCode[P_obj++] = "ori $a1,$fp,0";//ï¿½ï¿½Ì¬ï¿½ï¿½Ö¸Caller
 	}
-	else//ÈôÊÇµ÷ÓÃ·ûºÅ±íÖ®Ç°²ãµÄ¹ý³Ì£¬ÔòÐèÒÀ¾Ý²ã´Î²îÏòÉÏ²éÕÒ¾²Ì¬Á´
+	else//ï¿½ï¿½ï¿½Çµï¿½ï¿½Ã·ï¿½ï¿½Å±ï¿½Ö®Ç°ï¿½ï¿½Ä¹ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý²ï¿½Î²ï¿½ï¿½ï¿½ï¿½Ï²ï¿½ï¿½Ò¾ï¿½Ì¬ï¿½ï¿½
 	{
 		ObjectCode[P_obj++] = "ori $a1,$fp,0";
 
@@ -493,31 +493,31 @@ void obj_call(Quatriple *q)
 			ObjectCode[P_obj++] = "lw $a1,8($a1)";
 			t = t->father;
 		}
-		P_obj--;//°´ÉÏÊöÑ­»·±ØÈ»¶àÒ»´Î
+		P_obj--;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½È»ï¿½ï¿½Ò»ï¿½ï¿½
 	}
 	
-	RT_regs_save();//ÁÙÊ±¼Ä´æÆ÷×´Ì¬±£´æ
-	RT_save_glb(t_caller);//È«¾Ö¼Ä´æÆ÷×´Ì¬±£´æ
+	RT_regs_save();//ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½
+	RT_save_glb(t_caller);//È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½
 
-	//Ìø×ªµ½¹ý³Ì/º¯ÊýÌå
+	//ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	ObjectCode[P_obj++] = "jal " + q->n1;
 
-	//Ö´ÐÐÍêºó
-	ObjectCode[P_obj++] = "lw,$fp,4($fp)";//µ±Ç°»ùÖ·ÇÐ»Ø
-	ObjectCode[P_obj++] = "subi $sp,$sp," + yui_itos(t_callee->Mem_need);//ÍËÕ»
-	ObjectCode[P_obj++] = "lw $31,12($fp)";//ÖØÖÃ$31·µ»ØÎ»ÖÃ--jr×Ô¶¯»ØÌî£¿
+	//Ö´ï¿½ï¿½ï¿½ï¿½ï¿½
+	ObjectCode[P_obj++] = "lw,$fp,4($fp)";//ï¿½ï¿½Ç°ï¿½ï¿½Ö·ï¿½Ð»ï¿½
+	ObjectCode[P_obj++] = "subi $sp,$sp," + yui_itos(t_callee->Mem_need);//ï¿½ï¿½Õ»
+	ObjectCode[P_obj++] = "lw $31,12($fp)";//ï¿½ï¿½ï¿½ï¿½$31ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½--jrï¿½Ô¶ï¿½ï¿½ï¿½ï¿½î£¿
 	
-	RT_regs_recover();//ÁÙÊ±¼Ä´æÆ÷×´Ì¬»Ö¸´
-	RT_refresh_glb(t_caller);//È«¾Ö¼Ä´æÆ÷×´Ì¬»Ö¸´
+	RT_regs_recover();//ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½×´Ì¬ï¿½Ö¸ï¿½
+	RT_refresh_glb(t_caller);//È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½×´Ì¬ï¿½Ö¸ï¿½
 	RT_load_glb(t_caller);
 }
-void obj_return_to(Quatriple *q)//º¯Êý·µ»ØÖµÓï¾ä
+void obj_return_to(Quatriple *q)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½
 {
-	string tar_reg = mips_reg->GPR_get_reg(q->n1);//»ñÈ¡ÐÂµÄÁÙÊ±¼Ä´æÆ÷´æ·Å´Ë´Îº¯Êýµ÷ÓÃ·µ»ØÖµ
+	string tar_reg = mips_reg->GPR_get_reg(q->n1);//ï¿½ï¿½È¡ï¿½Âµï¿½ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Å´Ë´Îºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Öµ
 	ObjectCode[P_obj++] = "ori " + tar_reg + ",$v1,0";
 }
 
-void obj_run(Quatriple *q, Sym_table *t)//Óï¾ä·ÖÀà´¦Àí
+void obj_run(Quatriple *q, Sym_table *t)//ï¿½ï¿½ï¿½ï¿½ï¿½à´¦ï¿½ï¿½
 {
 	if (q->op == "ADD")
 		obj_caculate_AS(q, t, "add");
@@ -554,34 +554,34 @@ void obj_process()
 	{
 		Sym_table *t = q->table;
 
-		ObjectCode[P_obj++] = q->n1 + ":";//¹ý³ÌÈë¿Ú±ê¼Ç
+		ObjectCode[P_obj++] = q->n1 + ":";//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú±ï¿½ï¿½
 
-		ObjectCode[P_obj++] = "ori $fp,$sp,0";//$fp´æµ±Ç°»ùÖ·
-		ObjectCode[P_obj++] = "addi $sp,$sp," + yui_itos(t->Mem_need);//Õ»¶¥ÉÏÒÆ
-		ObjectCode[P_obj++] = "sw $fp,0($fp)";//AL-»ùÖ·
-		ObjectCode[P_obj++] = "sw $a0,4($fp)";//AL-d_link ¶¯Ì¬Á´
-		ObjectCode[P_obj++] = "sw $a1,8($fp)";//AL-s_link ¾²Ì¬Á´
-		ObjectCode[P_obj++] = "sw $ra,12($fp)";//AL-·µ»ØÎ»ÖÃ jalÌîµ½$31
+		ObjectCode[P_obj++] = "ori $fp,$sp,0";//$fpï¿½æµ±Ç°ï¿½ï¿½Ö·
+		ObjectCode[P_obj++] = "addi $sp,$sp," + yui_itos(t->Mem_need);//Õ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		ObjectCode[P_obj++] = "sw $fp,0($fp)";//AL-ï¿½ï¿½Ö·
+		ObjectCode[P_obj++] = "sw $a0,4($fp)";//AL-d_link ï¿½ï¿½Ì¬ï¿½ï¿½
+		ObjectCode[P_obj++] = "sw $a1,8($fp)";//AL-s_link ï¿½ï¿½Ì¬ï¿½ï¿½
+		ObjectCode[P_obj++] = "sw $ra,12($fp)";//AL-ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ jalï¿½îµ½$31
 		ObjectCode[P_obj++] = "";
 
-		RT_refresh_glb(t);//È«¾Ö¼Ä´æÆ÷Ë¢ÐÂ
+		RT_refresh_glb(t);//È«ï¿½Ö¼Ä´ï¿½ï¿½ï¿½Ë¢ï¿½ï¿½
 		RT_load_glb(t);
 
 		q = obj_nextQ();
-		while (q->op != "RETURN")//ÔÚRETURNÖ®Ç°Öð¸ö´¦ÀíËÄÔªÊ½
+		while (q->op != "RETURN")//ï¿½ï¿½RETURNÖ®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÔªÊ½
 		{
 			obj_run(q, t);
 			q = obj_nextQ();
 		}
 
-		if (t->father != NULL)//NULL¼´Ö÷³ÌÐò
-			ObjectCode[P_obj++] = "jr $31";//·µ»Ø
+		if (t->father != NULL)//NULLï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			ObjectCode[P_obj++] = "jr $31";//ï¿½ï¿½ï¿½ï¿½
 		ObjectCode[P_obj++] = "";
 
 		q = obj_nextQ();
 	}
 }
-void obj_data_str()//.data×Ö¶ÎÌî³ä
+void obj_data_str()//.dataï¿½Ö¶ï¿½ï¿½ï¿½ï¿½
 {
 	for (int i = 0; i < P_str; ++i)
 	{
@@ -592,7 +592,7 @@ void obj_data_str()//.data×Ö¶ÎÌî³ä
 
 void Obj_generate()
 {
-	ObjectCode[P_obj++] = "li $sp,0x10040000";//MarsÉè¶¨
+	ObjectCode[P_obj++] = "li $sp,0x10040000";//Marsï¿½è¶¨
 	ObjectCode[P_obj++] = "li $gp,0x10080000";
 	ObjectCode[P_obj++] = "li $a0,0";
 	ObjectCode[P_obj++] = "li $a1,0";

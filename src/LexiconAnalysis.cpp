@@ -1,21 +1,21 @@
-/*词法分析_Lexicon Analysis*/
+/*???????_Lexicon Analysis*/
 
-#include "pass_first.h"
+#include "../lib/pass_first.h"
 
 FILE *fin;
 
 int Counter_Line, Counter_Lex;
 bool File_End = false;
 
-map<string, string> KeyWordTable;//保留字表
+map<string, string> KeyWordTable;//???????
 char Buf_Line[Buf_Line_Size];
 char Buf_Lex[Buf_Lex_Size];
 int P_line, P_lex;
 char Char_temp;
 
-string Reg_Lex;//临时存储TOKEN内容
+string Reg_Lex;//????娲OKEN????
 
-char getch()//取一个字符
+char getch()//???????
 {
 	if (Buf_Line[P_line] == '\0' || Buf_Line[P_line] == '\n')
 	{
@@ -37,9 +37,9 @@ char getch()//取一个字符
 	}
 	return Buf_Line[P_line++];
 }
-string take_string()//单独用另一个缓冲区来读取字符串
+string take_string()//???????????????????????????
 {
-	char Buf_Str[128];//字符串限长128
+	char Buf_Str[128];//????????128
 	int P_str = 0;
 
 	memset(Buf_Str, '\0', sizeof(Buf_Str));
@@ -81,7 +81,7 @@ void LexiconAnalysis_init()
 	Counter_Line = 0;
 	Counter_Lex = 1;
 
-	/*初始化保留字表*/
+	/*????????????*/
 	KeyWordTable.insert(pair<string, string>("const", "SYM_CONST"));
 	KeyWordTable.insert(pair<string, string>("var", "SYM_VAR"));
 	KeyWordTable.insert(pair<string, string>("procedure", "SYM_PROC"));
@@ -120,7 +120,7 @@ void LexiconAnalysis_init()
 	KeyWordTable.insert(pair<string, string>("read", "SYM_READ"));
 	KeyWordTable.insert(pair<string, string>("write", "SYM_WRITE"));
 }
-string LA_getlexicon()//词法分析主程序，Value放入Reg_Lex，返回值为Type
+string LA_getlexicon()//?????????????Value????Reg_Lex????????Type
 {
 	Counter_Lex++;
 	Char_temp = getch();
@@ -133,9 +133,9 @@ string LA_getlexicon()//词法分析主程序，Value放入Reg_Lex，返回值为Type
 
 	Buf_Lex[P_lex++] = Char_temp;
 
-	int P_read = 0;//读词用
+	int P_read = 0;//??????
 
-	if ((Buf_Lex[P_read] >= 'a' &&  Buf_Lex[P_read] <= 'z') || (Buf_Lex[P_read] >= 'A' &&  Buf_Lex[P_read] <= 'Z'))//单词类
+	if ((Buf_Lex[P_read] >= 'a' &&  Buf_Lex[P_read] <= 'z') || (Buf_Lex[P_read] >= 'A' &&  Buf_Lex[P_read] <= 'Z'))//??????
 	{
 		Char_temp = getch();
 		while (P_lex < Buf_Lex_Size &&
@@ -150,7 +150,7 @@ string LA_getlexicon()//词法分析主程序，Value放入Reg_Lex，返回值为Type
 			P_line--;
 
 		string temp = string(Buf_Lex);
-		if (temp != "end")//end 不刷Reg_Lex
+		if (temp != "end")//end ???Reg_Lex
 			Reg_Lex = temp;
 
 		if (KeyWordTable[string(Buf_Lex)] != "")
@@ -158,7 +158,7 @@ string LA_getlexicon()//词法分析主程序，Value放入Reg_Lex，返回值为Type
 		else
 			return "SYM_IDENT";
 	}
-	else if (Buf_Lex[P_read] >= '0' && Buf_Lex[P_read] <= '9')//数字
+	else if (Buf_Lex[P_read] >= '0' && Buf_Lex[P_read] <= '9')//????
 	{
 		Char_temp = getch();
 		while (P_lex < Buf_Lex_Size && (Char_temp >= '0' && Char_temp <= '9'))
@@ -172,7 +172,7 @@ string LA_getlexicon()//词法分析主程序，Value放入Reg_Lex，返回值为Type
 		Reg_Lex = string(Buf_Lex);
 		return "SYM_NUM";
 	}
-	else if (Buf_Lex[P_read] == '"')//字符串处理
+	else if (Buf_Lex[P_read] == '"')//?????????
 	{
 		Char_temp = getch();
 

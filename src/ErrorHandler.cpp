@@ -1,6 +1,6 @@
-/*´íÎó´¦Àí_Error Handler*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_Error Handler*/
 
-#include "pass_first.h"
+#include "../lib/pass_first.h"
 
 void Error_report(int Eno, string Info)
 {

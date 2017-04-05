@@ -1,8 +1,8 @@
-/*·ыєЕ±н_Symbol Table*/
+/*пїЅпїЅпїЅЕ±пїЅ_Symbol Table*/
 
-#include "pass_first.h"
-#include "pass_second.h"
-#include "yui_tools.h"
+#include "../lib/pass_first.h"
+#include "../lib/pass_second.h"
+#include "../lib/yui_tools.h"
 
 Sym_table *Table0;
 
@@ -48,7 +48,7 @@ int Sym_table::Sym_GetAddr()
 	Mem_need = offset;
 	return offset;
 }
-Sym_line* Sym_table::Sym_fill(string id, string type, bool isParam)//Мо±н
+Sym_line* Sym_table::Sym_fill(string id, string type, bool isParam)//пїЅпїЅпїЅ
 {
 	Sym_line* temp_line;
 	if (isParam)

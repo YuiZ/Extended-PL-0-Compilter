@@ -1,6 +1,6 @@
 /*¹¤¾ß¼¯_Tools*/
 
-#include "yui_tools.h"
+#include "../lib/yui_tools.h"
 
 string yui_itos(int num)
 {

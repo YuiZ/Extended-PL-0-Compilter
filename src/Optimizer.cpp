@@ -1,9 +1,10 @@
-/*´úÂëÓÅ»¯_Optimization*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½_Optimization*/
 
-#include "pass_second.h"
-#include "yui_tools.h"
+#include "../lib/pass_first.h"
+#include "../lib/pass_second.h"
+#include "../lib/yui_tools.h"
 
-int Block_sign[MidCode_Max_Size];//»ù±¾¿ì»®·Ö±ê¼Ç
+int Block_sign[MidCode_Max_Size];//ï¿½ï¿½ï¿½ï¿½ï¿½ì»®ï¿½Ö±ï¿½ï¿½
 SubProgram* SubProg[32];
 int P_sp;
 
@@ -264,7 +265,7 @@ void SubProgram::print_blocks()
 	for (int i = 0; i < Blocks_Size; ++i)
 	{
 		cout << Blocks[i]->begin << " - " << Blocks[i]->end << endl;
-		//Blocks[i]->print_sets(P_vn);//´òÓ¡USE DEF IN OUT¼¯ºÏ¼ÆËã½á¹û
+		//Blocks[i]->print_sets(P_vn);//ï¿½ï¿½Ó¡USE DEF IN OUTï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½ï¿½ï¿½
 	}
 
 	cout << "------------------------------" << endl;
@@ -322,19 +323,19 @@ void opt_active_var()
 	//	SubProg[i]->print_blocks();
 }
 
-void opt_divide2block()//»®·Ö»ù±¾¿é
+void opt_divide2block()//ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	Block_sign[0] = 1;
 	for (int i = 0; i < P_qc; ++i)
 	{
 		if (QuatriCode[i]->op == "goto")
 		{
-			Block_sign[i + 1] = 1;//Ìø×ªºóµÄµÚÒ»¾ä
-			Block_sign[atoi(QuatriCode[i]->n1.c_str())] = 1;//Ìø×ªÄ¿±ê
+			Block_sign[i + 1] = 1;//ï¿½ï¿½×ªï¿½ï¿½Äµï¿½Ò»ï¿½ï¿½
+			Block_sign[atoi(QuatriCode[i]->n1.c_str())] = 1;//ï¿½ï¿½×ªÄ¿ï¿½ï¿½
 		}
-		else if (QuatriCode[i]->op == "ENTER")//¹ý³ÌÈë¿Ú
+		else if (QuatriCode[i]->op == "ENTER")//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			Block_sign[i] = 1;
-		else if (QuatriCode[i]->op == "CALL")//¹ý³Ìµ÷ÓÃ·µ»ØÎ»ÖÃ
+		else if (QuatriCode[i]->op == "CALL")//ï¿½ï¿½ï¿½Ìµï¿½ï¿½Ã·ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 		{
 			string proc_name = QuatriCode[i]->n2;
 			int counter = 0;
@@ -348,7 +349,7 @@ void opt_divide2block()//»®·Ö»ù±¾¿é
 
 				j++;
 			}
-			if (QuatriCode[i+j]->op != "RETURN_TO")//ÈôÓÐRETURN_TOÔòÊÇº¯Êýµ÷ÓÃ£¬º¯Êýµ÷ÓÃ³öÏÖÔÚ±í´ïÊ½ÖÐ¼ä£¬²»Ó¦´ò¶Ï
+			if (QuatriCode[i+j]->op != "RETURN_TO")//ï¿½ï¿½ï¿½ï¿½RETURN_TOï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½ï¿½Ú±ï¿½ï¿½Ê½ï¿½Ð¼ä£¬ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½
 				Block_sign[i+j] = 1;
 		}
 	}
@@ -387,7 +388,7 @@ void opt_divede2proc()
 				}
 			}
 
-			SubProg[P_sp]->build_blocks();//¶ÔÃ¿¸ö·Ö³ÌÐò£¬½¨Á¢Æä»ù±¾¿é¼ÇÂ¼
+			SubProg[P_sp]->build_blocks();//ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Ö³ï¿½ï¿½ò£¬½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼
 
 			i = SubProg[P_sp]->end + 1;
 			P_sp++;
@@ -402,11 +403,11 @@ void opt_temp_reg_distribute()
 
 void Opt_process()
 {
-	opt_divide2block();//»®·Ö»ù±¾¿é
-	opt_divede2proc();//»®·Ö·Ö³ÌÐò
+	opt_divide2block();//ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½
+	opt_divede2proc();//ï¿½ï¿½ï¿½Ö·Ö³ï¿½ï¿½ï¿½
 
-	mips_reg = new GPR(8, Temp_Reg_Size);//Éè¶¨¼Ä´æÆ÷¶Ñ
-	opt_temp_reg_distribute();//ÁÙÊ±¼Ä´æÆ÷Ô¤·ÖÅä´¦Àí
+	mips_reg = new GPR(8, Temp_Reg_Size);//ï¿½è¶¨ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
+	opt_temp_reg_distribute();//ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ä´¦ï¿½ï¿½
 
 	string option = "Y";
 	//cout << "==>> Try to optimize? Enter \"y\" for YES, any other for NO." << endl;
@@ -414,6 +415,6 @@ void Opt_process()
 	//cout << "======" << endl;
 	if (option == "Y" || option == "y")
 	{
-		opt_active_var();//»îÔ¾±äÁ¿·ÖÎö
+		opt_active_var();//ï¿½ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	}
 }

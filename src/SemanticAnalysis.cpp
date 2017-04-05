@@ -1,8 +1,8 @@
-/*ÓïÒå·ÖÎö_Semantic Analysis*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_Semantic Analysis*/
 
-#include "pass_first.h"
-#include "pass_second.h"
-#include "yui_tools.h"
+#include "../lib/pass_first.h"
+#include "../lib/pass_second.h"
+#include "../lib/yui_tools.h"
 
 Quatriple *QuatriCode[MidCode_Max_Size];
 int P_qc;
