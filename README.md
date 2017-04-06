@@ -3,9 +3,9 @@
 ---
 这是一个针对一种扩充PL/0语法的简单编译器，可将读入的扩充PL/0源码编译为32位MIPS汇编程序。
 
-Thi is a simple compiler for an extended PL/0 syntax. The object code is a subset belonging to 32-bit MIPS instructions. 
-
 本项目使用C/C++代码编写。
+
+Thi is a simple compiler for an extended PL/0 syntax. The object code is a subset belonging to 32-bit MIPS instructions. 
 
 This compiler is accomplished by C/C++.
 
@@ -40,7 +40,7 @@ This compiler is accomplished by C/C++.
 代码文件说明 Source Code Description
 ---
 | 文件名 File Name | 说明 Description |
-| :---: | :--- |
+| :--- | :--- |
 | pass_first.h | 第一遍相关的数据结构和公用函数定义 Functions and data structure declarations for the first pass|
 | pass_second.h | 第二遍相关的数据结构和公用函数定义 Functions and data structure declarations for the second pass|
 | yui_tools.h | 自定义工具函数 Custom tools|
