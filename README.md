@@ -1,4 +1,4 @@
-# Extended-PL-0-Compilter
+# Extended-PL-0 Compilter
 
 文法 Syntax
 ---
@@ -90,9 +90,9 @@
 <number>          		::=   0|1|2|3…8|9
 ```
 
-目标代码说明 About target code
+目标代码说明 About object code
 ---
-| 指令 instruction | 形式 formulation | 含义 meaning |
+| 指令 instruction | 形式 formulation | 含义 description |
 | :---: | :---: | :---: |
 | j | j _label | 无条件跳转 |
 | jal | jal func_label | 跳转并链接，用于过程、函数调用 |
@@ -119,3 +119,52 @@
 | la | la rt | 取内存地址到寄存器 |
 | syscall | syscall | 系统调用，据$v0值进行不同操作 |
 |.data | .data | 存储数据段信息（字符串） |
+
+系统调用详细说明 About 'syscall' instruction
+
+| 服务 Service | $v0 register value | 说明 description |
+| :---: | :---: | :---: |
+| Read integer | 5 | 取值作为整数存入$v0 |
+| Read char | 12 | 取值作为字符存入$v0 |
+| Print integer | 1 | 以整数打印$a0的值 |
+| Print char | 11 | 以字符打印$a0的值 |
+| Print string | 4 | 以$a0值为指针，打印其指向的string |
+
+程序结构及主要流程 Structure and main process
+---
+| 模块 module | 对应源代码文件 source code file |
+| :---: | :---: |
+| 词法分析 | LexiconAnalysis.cpp |
+| 语法分析 | SyntaxAnalysis.cpp |
+| 符号表 | SymbolTable.cpp |
+| 语义分析 | SemanticAnalysis.cpp |
+| 目标代码生成 | ObjectCodeProducer.cpp, GeneralPurposeRegisters.cpp |
+| 错误处理 | LexiconAnalysis.cpp |
+
+![compiler structure](structure.png)
+```
+参照上图，3遍扫描过程如下：
+第1遍：扫描源程序，获得符号表与中间代码（两者在代码优化部分会有进一步完善，目标代码生成的）
+    参与者：词法分析、语法分析、语义分析及中间代码生成、符号表、错误处理
+    过程：
+        （1）源程序代码读入;
+        （2）进入语法分析程序，对源程序采用自顶向下递归的分析方式，调用[词法分析程序取词;
+        （3）语义分析伴随语法分析过程中实现;
+        （4）符号表伴随语法分析过程逐渐构建形成
+    结果：基本完整的符号表和中间代码-四元式
+	
+第2遍：扫描中间代码，划分基本块并完善符号表
+    参与者：符号表、代码优化、错误处理
+    过程：
+        （1）在中间代码上划分基本块
+        （2）将中间代码包含的各子过程划分开，建立各子过程的基本块信息记录
+        （3）对各子过程进行活跃变量分析和全局寄存器分配
+        （4）对各子过程所用临时变量进行预先统计（实际分配在目标代码生成中完成），若出现临时寄存器不足的情况，则在符号表中添加伪寄存器的表项（即为临时寄存器预留空间），并调整四元式（将表示临时寄存器的_Tx置换为伪寄存器M_Tx）
+    结果：符号表、中间代码
+
+第3遍：扫描完善后的中间代码，结合符号表从而生成目标代码
+    参与者：符号表、目标代码生成、错误处理
+    过程：逐条读中间代码，生成实现相应功能的mips汇编代码
+    结果：目标代码（MIPS汇编）
+```
+
